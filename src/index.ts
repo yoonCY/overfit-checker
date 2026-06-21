@@ -1,6 +1,7 @@
 import "dotenv/config";
 import { Command } from "commander";
 import { createCheckCommand } from "./commands/check.js";
+import { createUiCommand } from "./commands/ui.js";
 
 const program = new Command();
 
@@ -10,8 +11,10 @@ program
   .version("0.1.0");
 
 program.addCommand(createCheckCommand());
+program.addCommand(createUiCommand());
 
 program.parseAsync(process.argv).catch((err: unknown) => {
   console.error(err instanceof Error ? err.message : String(err));
   process.exit(1);
 });
+

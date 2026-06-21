@@ -34,7 +34,10 @@ function buildDocument(raw: string, source: string | undefined, label: string): 
   const trimmed = raw.trim();
 
   // 길이 제한: 너무 긴 문서는 앞부분만 분석
-  const content = trimmed.length > MAX_CHARS ? trimmed.slice(0, MAX_CHARS) + "\n\n[...문서가 너무 길어 앞부분만 분석합니다]" : trimmed;
+  const content =
+    trimmed.length > MAX_CHARS
+      ? `${trimmed.slice(0, MAX_CHARS)}\n\n[...문서가 너무 길어 앞부분만 분석합니다]`
+      : trimmed;
 
   const estimatedTokens = content.split(/\s+/).filter(Boolean).length;
 

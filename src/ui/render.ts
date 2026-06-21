@@ -44,7 +44,9 @@ export function renderResult(result: OverfitResult, label: string): void {
     console.log(chalk.bold.red(`🚨  과도한 설계 요소 (${result.overfit_items.length}개)`));
     console.log();
     for (const [i, item] of result.overfit_items.entries()) {
-      console.log(`  ${chalk.bold(`${i + 1}.`)} ${chalk.yellow(item.title)}   ${RISK_BADGE[item.risk]}`);
+      console.log(
+        `  ${chalk.bold(`${i + 1}.`)} ${chalk.yellow(item.title)}   ${RISK_BADGE[item.risk]}`,
+      );
       console.log(`     ${chalk.dim(item.reason)}`);
       console.log();
     }
@@ -57,7 +59,7 @@ export function renderResult(result: OverfitResult, label: string): void {
   console.log(chalk.bold("💡  더 작은 대안"));
   console.log();
   console.log(`  ${result.alternative.description}`);
-  console.log(`  ${chalk.dim("절감: " + result.alternative.savings)}`);
+  console.log(`  ${chalk.dim(`절감: ${result.alternative.savings}`)}`);
   console.log();
   console.log(bar);
 
@@ -66,7 +68,7 @@ export function renderResult(result: OverfitResult, label: string): void {
   console.log(chalk.bold("✅  다음 최소 작업"));
   console.log();
   for (const task of result.next_tasks) {
-    console.log(`  ${chalk.bold.green(task.order + ".")} ${task.task}`);
+    console.log(`  ${chalk.bold.green(`${task.order}.`)} ${task.task}`);
   }
   console.log();
 }
@@ -76,6 +78,37 @@ export function renderResult(result: OverfitResult, label: string): void {
  */
 export function renderJson(result: OverfitResult): void {
   console.log(JSON.stringify(result, null, 2));
+}
+
+/**
+ * 마크다운 포맷으로 출력한다. (복사하기 쉽도록 순수 텍스트 마크다운 출력)
+ */
+export function renderMarkdown(result: OverfitResult, label: string): void {
+  let md = "";
+  md += `# Overfit Analysis - ${label}\n\n`;
+  md += `## 복잡도 점수: ${result.complexity_score} / 10 (${result.verdict})\n\n`;
+  md += `> ${result.summary}\n\n`;
+
+  md += `## 과도한 설계 요소 (${result.overfit_items.length}개)\n\n`;
+  if (result.overfit_items.length === 0) {
+    md += "* 과도한 설계 요소가 없으며, 적정한 설계입니다.\n\n";
+  } else {
+    for (const [i, item] of result.overfit_items.entries()) {
+      md += `### ${i + 1}. ${item.title} (위험도: ${item.risk})\n`;
+      md += `${item.reason}\n\n`;
+    }
+  }
+
+  md += "## 더 작은 대안\n\n";
+  md += `${result.alternative.description}\n`;
+  md += `* **절감 범위**: ${result.alternative.savings}\n\n`;
+
+  md += "## 다음 최소 작업\n\n";
+  for (const task of result.next_tasks) {
+    md += `${task.order}. ${task.task}\n`;
+  }
+
+  console.log(md.trim());
 }
 
 function buildScoreBar(score: number): string {

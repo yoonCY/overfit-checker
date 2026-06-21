@@ -27,19 +27,14 @@ export const OverfitResultSchema = z.object({
     .min(1)
     .max(10)
     .describe("복잡도 점수 (1=단순, 10=극단적 오버엔지니어링)"),
-  verdict: z
-    .enum(["적정", "주의", "과도"])
-    .describe("1~4: 적정, 5~7: 주의, 8~10: 과도"),
+  verdict: z.enum(["적정", "주의", "과도"]).describe("1~4: 적정, 5~7: 주의, 8~10: 과도"),
   overfit_items: z
     .array(OverfitItemSchema)
     .min(0)
     .max(5)
     .describe("과도한 설계 요소 목록 (최대 5개)"),
   alternative: AlternativeSchema.describe("더 작은 대안"),
-  next_tasks: z
-    .array(NextTaskSchema)
-    .length(3)
-    .describe("다음 최소 작업 3개"),
+  next_tasks: z.array(NextTaskSchema).length(3).describe("다음 최소 작업 3개"),
   summary: z.string().describe("한 줄 요약"),
 });
 

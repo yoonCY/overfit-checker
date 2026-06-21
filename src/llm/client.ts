@@ -1,6 +1,6 @@
 import "dotenv/config";
 import OpenAI from "openai";
-import { OverfitResultSchema, type OverfitResult } from "../schema/result.js";
+import { type OverfitResult, OverfitResultSchema } from "../schema/result.js";
 import { SYSTEM_PROMPT, buildUserPrompt } from "./prompt.js";
 
 /**

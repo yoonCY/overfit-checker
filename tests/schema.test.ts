@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { OverfitResultSchema } from "../src/schema/result.js";
 
 describe("OverfitResultSchema", () => {
