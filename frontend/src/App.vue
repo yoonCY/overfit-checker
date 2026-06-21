@@ -25,28 +25,28 @@
           ></textarea>
         </div>
         <div style="display: flex; gap: 0.75rem; margin-bottom: 1.25rem;">
-          <button 
-            type="button" 
-            class="theme-toggle-btn" 
+          <button
+            type="button"
+            class="theme-toggle-btn"
             style="flex: 1; justify-content: center;"
             @click="loadSample('govail')"
             :disabled="isLoading"
           >
-            📋 복잡한 샘플 로드 (과적합)
+            📋 복잡한 샘플 (과적합)
           </button>
-          <button 
-            type="button" 
-            class="theme-toggle-btn" 
+          <button
+            type="button"
+            class="theme-toggle-btn"
             style="flex: 1; justify-content: center;"
             @click="loadSample('simple')"
             :disabled="isLoading"
           >
-            📋 심플한 샘플 로드 (적정)
+            📋 심플한 샘플 (적정)
           </button>
         </div>
-        <button 
-          class="btn-submit" 
-          @click="submitAnalysis" 
+        <button
+          class="btn-submit"
+          @click="submitAnalysis"
           :disabled="isLoading || !markdownText.trim()"
         >
           <span v-if="isLoading" class="spinner"></span>
@@ -55,9 +55,9 @@
       </section>
 
       <!-- 에러 알림 -->
-      <div v-if="errorMessage" class="card" style="border-color: var(--danger); background: rgba(220, 38, 38, 0.05);">
-        <p style="color: var(--danger); font-weight: 600;">⚠️ 분석 실패</p>
-        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.25rem;">{{ errorMessage }}</p>
+      <div v-if="errorMessage" class="card error-card">
+        <p class="error-title">⚠️ 분석 실패</p>
+        <p class="error-body">{{ errorMessage }}</p>
       </div>
 
       <!-- 로딩 스켈레톤 -->
@@ -73,39 +73,65 @@
         <div class="result-header">
           <div class="result-title">
             <h2>🔍 과적합 판독 결과</h2>
-            <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.25rem;">판독 완료 시간: {{ scanTime }}</p>
+            <p class="scan-time">판독 완료 시간: {{ scanTime }}</p>
           </div>
           <div class="score-badge">
             <span class="verdict-tag" :class="result.verdict">{{ result.verdict }}</span>
             <span class="score-number" :style="{ color: getVerdictColor(result.verdict) }">
-              {{ result.complexity_score }}<span style="font-size: 1rem; color: var(--text-muted); font-weight: 500;">/10</span>
+              {{ result.complexity_score }}<span class="score-denom">/10</span>
             </span>
           </div>
         </div>
 
         <!-- 복잡도 미터 바 -->
         <div class="score-meter">
-          <div 
-            class="score-fill" 
-            :class="result.verdict" 
+          <div
+            class="score-fill"
+            :class="result.verdict"
             :style="{ width: `${result.complexity_score * 10}%` }"
           ></div>
         </div>
 
+        <!-- 문제 규모 vs 해결책 규모 -->
+        <div class="size-comparison">
+          <div class="size-item">
+            <span class="size-label">문제 규모</span>
+            <span class="size-badge problem" :class="result.problem_size.toLowerCase()">
+              {{ result.problem_size }}
+            </span>
+          </div>
+          <div class="size-arrow">
+            <span class="arrow-line"></span>
+            <span class="arrow-icon" :class="getSizeGapClass(result.problem_size, result.solution_size)">
+              {{ getSizeGapIcon(result.problem_size, result.solution_size) }}
+            </span>
+            <span class="arrow-line"></span>
+          </div>
+          <div class="size-item">
+            <span class="size-label">해결책 규모</span>
+            <span class="size-badge solution" :class="result.solution_size.toLowerCase()">
+              {{ result.solution_size }}
+            </span>
+          </div>
+          <div class="size-gap-msg" :class="getSizeGapClass(result.problem_size, result.solution_size)">
+            {{ getSizeGapMessage(result.problem_size, result.solution_size) }}
+          </div>
+        </div>
+
         <!-- 한 줄 요약 -->
-        <p class="summary-text">“{{ result.summary }}”</p>
+        <p class="summary-text">"{{ result.summary }}"</p>
 
         <!-- 과도한 설계 요소 리스트 -->
         <div class="section-title">
           <span>🚨</span> 과도한 설계 요소 ({{ result.overfit_items.length }}개)
         </div>
-        
+
         <div v-if="result.overfit_items.length === 0" class="overfit-list">
-          <div class="overfit-item" style="border-color: var(--success); background: rgba(5, 150, 105, 0.02); text-align: center; padding: 1.5rem;">
-            <p style="color: var(--success); font-weight: 600;">✅ 적합한 범위의 설계입니다. 오버엔지니어링 요소를 발견하지 못했습니다.</p>
+          <div class="overfit-item ok-item">
+            <p class="ok-text">✅ 적합한 범위의 설계입니다. 오버엔지니어링 요소를 발견하지 못했습니다.</p>
           </div>
         </div>
-        
+
         <div v-else class="overfit-list">
           <div v-for="(item, index) in result.overfit_items" :key="index" class="overfit-item">
             <div class="overfit-item-header">
@@ -142,7 +168,7 @@
 
     <!-- 푸터 -->
     <footer>
-      <p>© {{ new Date().getFullYear() }} Overfit Checker. All Rights Reserved. (Standalone Mode)</p>
+      <p>© {{ new Date().getFullYear() }} Overfit Checker — 이 설계, 과한가요?</p>
     </footer>
   </div>
 </template>
@@ -150,7 +176,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 
-// 결과 Zod 스키마와 동일 구조의 타입 정의
+// 결과 타입 (Zod 스키마와 동일 구조)
 interface OverfitItem {
   title: string;
   reason: string;
@@ -160,6 +186,8 @@ interface OverfitItem {
 interface OverfitResult {
   complexity_score: number;
   verdict: '적정' | '주의' | '과도';
+  problem_size: 'Tiny' | 'Small' | 'Medium' | 'Large' | 'Enterprise';
+  solution_size: 'Script' | 'Library' | 'Service' | 'Platform' | 'Ecosystem';
   summary: string;
   overfit_items: OverfitItem[];
   alternative: {
@@ -171,6 +199,13 @@ interface OverfitResult {
     task: string;
   }[];
 }
+
+const PROBLEM_RANK: Record<string, number> = {
+  Tiny: 0, Small: 1, Medium: 2, Large: 3, Enterprise: 4,
+};
+const SOLUTION_RANK: Record<string, number> = {
+  Script: 0, Library: 1, Service: 2, Platform: 3, Ecosystem: 4,
+};
 
 const markdownText = ref('');
 const isLoading = ref(false);
@@ -246,9 +281,7 @@ const submitAnalysis = async () => {
   try {
     const response = await fetch('/api/check', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ content: markdownText.value }),
     });
 
@@ -267,7 +300,33 @@ const submitAnalysis = async () => {
   }
 };
 
-// 라벨링 헬퍼 함수
+// 규모 불균형 헬퍼
+const getSizeGap = (problemSize: string, solutionSize: string): number => {
+  return (SOLUTION_RANK[solutionSize] ?? 0) - (PROBLEM_RANK[problemSize] ?? 0);
+};
+
+const getSizeGapClass = (problemSize: string, solutionSize: string): string => {
+  const gap = getSizeGap(problemSize, solutionSize);
+  if (gap >= 2) return 'gap-danger';
+  if (gap === 1) return 'gap-warning';
+  return 'gap-ok';
+};
+
+const getSizeGapIcon = (problemSize: string, solutionSize: string): string => {
+  const gap = getSizeGap(problemSize, solutionSize);
+  if (gap >= 2) return '🚨';
+  if (gap === 1) return '⚠️';
+  return '✅';
+};
+
+const getSizeGapMessage = (problemSize: string, solutionSize: string): string => {
+  const gap = getSizeGap(problemSize, solutionSize);
+  if (gap >= 2) return '규모 불균형 — 해결책이 문제보다 훨씬 큽니다';
+  if (gap === 1) return '규모 차이 — 약간 과도할 수 있습니다';
+  return '균형 잡힌 설계입니다';
+};
+
+// 라벨링 헬퍼
 const getRiskLabel = (risk: 'low' | 'medium' | 'high') => {
   const mapping = { low: '낮음', medium: '중간', high: '높음' };
   return mapping[risk] || risk;

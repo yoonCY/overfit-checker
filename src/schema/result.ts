@@ -19,6 +19,12 @@ export const NextTaskSchema = z.object({
   task: z.string().describe("최소 작업 설명"),
 });
 
+// 문제 규모 (현재 요구사항 크기)
+export const ProblemSizeSchema = z.enum(["Tiny", "Small", "Medium", "Large", "Enterprise"]);
+
+// 해결책 규모 (제안된 구현의 복잡도 계층)
+export const SolutionSizeSchema = z.enum(["Script", "Library", "Service", "Platform", "Ecosystem"]);
+
 // 전체 분석 결과
 export const OverfitResultSchema = z.object({
   complexity_score: z
@@ -28,6 +34,12 @@ export const OverfitResultSchema = z.object({
     .max(10)
     .describe("복잡도 점수 (1=단순, 10=극단적 오버엔지니어링)"),
   verdict: z.enum(["적정", "주의", "과도"]).describe("1~4: 적정, 5~7: 주의, 8~10: 과도"),
+  problem_size: ProblemSizeSchema.describe(
+    "문제 규모: Tiny=개인 스크립트 / Small=팀 도구 / Medium=스타트업 MVP / Large=성장 서비스 / Enterprise=대규모 조직",
+  ),
+  solution_size: SolutionSizeSchema.describe(
+    "해결책 규모: Script=단일파일 / Library=패키지 / Service=API서버 / Platform=다중서비스+인프라 / Ecosystem=DSL/런타임/플러그인",
+  ),
   overfit_items: z
     .array(OverfitItemSchema)
     .min(0)
@@ -42,3 +54,5 @@ export type OverfitItem = z.infer<typeof OverfitItemSchema>;
 export type Alternative = z.infer<typeof AlternativeSchema>;
 export type NextTask = z.infer<typeof NextTaskSchema>;
 export type OverfitResult = z.infer<typeof OverfitResultSchema>;
+export type ProblemSize = z.infer<typeof ProblemSizeSchema>;
+export type SolutionSize = z.infer<typeof SolutionSizeSchema>;

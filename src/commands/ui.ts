@@ -1,5 +1,5 @@
+import { exec } from "node:child_process";
 import { Command } from "commander";
-import { exec } from "child_process";
 import { createServer } from "../server.js";
 
 /**
@@ -7,11 +7,7 @@ import { createServer } from "../server.js";
  */
 function openBrowser(url: string) {
   const start =
-    process.platform === "darwin"
-      ? "open"
-      : process.platform === "win32"
-        ? "start"
-        : "xdg-open";
+    process.platform === "darwin" ? "open" : process.platform === "win32" ? "start" : "xdg-open";
   exec(`${start} ${url}`, (err) => {
     if (err) {
       console.warn(`브라우저 자동 오픈 실패: ${err.message}`);
@@ -26,8 +22,8 @@ export function createUiCommand(): Command {
     .description("로컬 웹 UI 서버를 실행하고 웹 브라우저를 자동 팝업합니다")
     .option("-p, --port <port>", "서버가 리스닝할 포트 번호", "3000")
     .action((options: { port: string }) => {
-      const port = parseInt(options.port, 10);
-      if (isNaN(port)) {
+      const port = Number.parseInt(options.port, 10);
+      if (Number.isNaN(port)) {
         console.error("오류: 포트 번호는 숫자여야 합니다.");
         process.exit(1);
       }

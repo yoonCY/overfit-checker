@@ -5,6 +5,8 @@ describe("OverfitResultSchema", () => {
   const validResult = {
     complexity_score: 8,
     verdict: "과도",
+    problem_size: "Small",
+    solution_size: "Platform",
     overfit_items: [
       {
         title: "DSL 컴파일러",
@@ -62,6 +64,18 @@ describe("OverfitResultSchema", () => {
 
   it("verdict가 적정|주의|과도 중 하나여야 한다", () => {
     const invalid = { ...validResult, verdict: "unknown" };
+    const result = OverfitResultSchema.safeParse(invalid);
+    expect(result.success).toBe(false);
+  });
+
+  it("problem_size가 올바른 enum 값이어야 한다", () => {
+    const invalid = { ...validResult, problem_size: "Gigantic" };
+    const result = OverfitResultSchema.safeParse(invalid);
+    expect(result.success).toBe(false);
+  });
+
+  it("solution_size가 올바른 enum 값이어야 한다", () => {
+    const invalid = { ...validResult, solution_size: "Monolith" };
     const result = OverfitResultSchema.safeParse(invalid);
     expect(result.success).toBe(false);
   });

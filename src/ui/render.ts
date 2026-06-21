@@ -13,6 +13,32 @@ const VERDICT_STYLE = {
   과도: chalk.red,
 } as const;
 
+// 문제 규모와 해결책 규모 간 단계 차이를 계산 (불균형 탐지)
+const PROBLEM_SIZE_RANK: Record<string, number> = {
+  Tiny: 0,
+  Small: 1,
+  Medium: 2,
+  Large: 3,
+  Enterprise: 4,
+};
+
+const SOLUTION_SIZE_RANK: Record<string, number> = {
+  Script: 0,
+  Library: 1,
+  Service: 2,
+  Platform: 3,
+  Ecosystem: 4,
+};
+
+function getSizeGapWarning(problemSize: string, solutionSize: string): string {
+  const pRank = PROBLEM_SIZE_RANK[problemSize] ?? 0;
+  const sRank = SOLUTION_SIZE_RANK[solutionSize] ?? 0;
+  const gap = sRank - pRank;
+  if (gap >= 2) return chalk.red("⚠️  규모 불균형 — 해결책이 문제보다 훨씬 큽니다");
+  if (gap === 1) return chalk.yellow("△  규모 차이 — 약간 과도할 수 있습니다");
+  return chalk.green("✓  규모 균형");
+}
+
 /**
  * 분석 결과를 터미널에 출력한다.
  */
@@ -31,6 +57,14 @@ export function renderResult(result: OverfitResult, label: string): void {
     `📊  복잡도 점수   ${scoreStyle.bold(String(result.complexity_score))} / 10   ${scoreBar}   ${scoreStyle.bold(result.verdict)}`,
   );
   console.log();
+
+  // 문제 규모 vs 해결책 규모
+  const gapWarning = getSizeGapWarning(result.problem_size, result.solution_size);
+  console.log(
+    `🎯  문제 규모: ${chalk.cyan.bold(result.problem_size)}  →  해결책 규모: ${chalk.magenta.bold(result.solution_size)}   ${gapWarning}`,
+  );
+  console.log();
+
   console.log(chalk.dim(`    ${result.summary}`));
   console.log();
   console.log(bar);
@@ -87,6 +121,7 @@ export function renderMarkdown(result: OverfitResult, label: string): void {
   let md = "";
   md += `# Overfit Analysis - ${label}\n\n`;
   md += `## 복잡도 점수: ${result.complexity_score} / 10 (${result.verdict})\n\n`;
+  md += `| 문제 규모 | 해결책 규모 |\n|---|---|\n| ${result.problem_size} | ${result.solution_size} |\n\n`;
   md += `> ${result.summary}\n\n`;
 
   md += `## 과도한 설계 요소 (${result.overfit_items.length}개)\n\n`;

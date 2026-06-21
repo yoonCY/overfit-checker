@@ -457,3 +457,125 @@ footer {
     padding: 1rem;
   }
 }
+
+/* 에러 카드 */
+.error-card {
+  border-color: var(--danger);
+  background: rgba(220, 38, 38, 0.05);
+}
+
+.error-title {
+  color: var(--danger);
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.error-body {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+/* 스캔 완료 시간 */
+.scan-time {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+}
+
+/* 점수 분모 */
+.score-denom {
+  font-size: 1rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* 문제 규모 vs 해결책 규모 비교 */
+.size-comparison {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--bg-app);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.size-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  flex: 1;
+  min-width: 80px;
+}
+
+.size-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.size-badge {
+  font-family: var(--font-title);
+  font-size: 0.95rem;
+  font-weight: 700;
+  padding: 0.3rem 0.9rem;
+  border-radius: 20px;
+  border: 1px solid currentColor;
+}
+
+/* problem_size 배지 색상 */
+.size-badge.problem {
+  color: var(--primary);
+  background: var(--primary-glow);
+}
+
+/* solution_size 배지 색상 (기본) */
+.size-badge.solution {
+  color: var(--text-muted);
+  background: var(--bg-card);
+}
+
+/* 화살표 영역 */
+.size-arrow {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex: 0 0 auto;
+}
+
+.arrow-line {
+  display: inline-block;
+  width: 20px;
+  height: 2px;
+  background: var(--border-color);
+}
+
+.arrow-icon {
+  font-size: 1.1rem;
+}
+
+/* 규모 불균형 메시지 */
+.size-gap-msg {
+  width: 100%;
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-top: 0.25rem;
+  padding-top: 0.5rem;
+  border-top: 1px dashed var(--border-color);
+}
+
+.gap-danger { color: var(--danger); }
+.gap-warning { color: var(--warning); }
+.gap-ok { color: var(--success); }
+
+/* solution_size 배지: gap별 색상 강조 */
+.size-badge.solution.gap-danger-solution {
+  color: var(--danger);
+  background: rgba(220, 38, 38, 0.08);
+}

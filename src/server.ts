@@ -1,6 +1,6 @@
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import express from "express";
-import path from "path";
-import { fileURLToPath } from "url";
 import { analyzeDocument } from "./llm/client.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -16,7 +16,9 @@ export function createServer(): express.Express {
   app.post("/api/check", async (req, res) => {
     const { content } = req.body;
     if (!content || typeof content !== "string" || !content.trim()) {
-      res.status(400).json({ error: "분석할 마크다운 텍스트(content)가 누락되었거나 올바르지 않습니다." });
+      res
+        .status(400)
+        .json({ error: "분석할 마크다운 텍스트(content)가 누락되었거나 올바르지 않습니다." });
       return;
     }
 
@@ -26,7 +28,8 @@ export function createServer(): express.Express {
     } catch (err) {
       console.error("설계 분석 오류:", err);
       res.status(500).json({
-        error: err instanceof Error ? err.message : "서버 분석 과정에서 알 수 없는 오류가 발생했습니다.",
+        error:
+          err instanceof Error ? err.message : "서버 분석 과정에서 알 수 없는 오류가 발생했습니다.",
       });
     }
   });
