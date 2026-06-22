@@ -6,8 +6,10 @@ dist/
 # 환경 설정 (절대 커밋 금지)
 .env
 .env.vercel
+.env.vercel.*
 .env.local
 .env.*.local
+openapi-*.yaml
 
 # 로그
 logs/
