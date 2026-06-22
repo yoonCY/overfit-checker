@@ -18,7 +18,18 @@ overfit-checker (설계 검증 도구 - CLI & Web UI)
 Vercel (프론트엔드 + Serverless API)
 ```
 
-Govail의 일부가 아닙니다. 독립 실행 가능해야 합니다.
+Govail의 일부가 아니며 독립적으로 실행 가능합니다.
+
+### 고베일 대규모 개편 및 포크 저장소 유지 사유
+1. **고베일 대규모 개편 (Decomposition)**
+   - 고베일 에코시스템이 모노레포 구조에서 개별 독립 리포지토리로 분해(Decomposition)되었습니다.
+   - 이에 따라 `overfit-checker`는 완전히 독립된 CLI 및 로컬 웹 UI 프로젝트로 운영됩니다.
+   - LLM 연동 방식이 기존의 고정 API Key 방식에서 **단기 만료형(15분) JWT 토큰 발행 및 검증 방식**으로 전면 개편되었습니다.
+2. **포크 저장소 유지 사유 (yoonCY/overfit-checker)**
+   - **원본 저장소**: `https://github.com/GoVail/overfit-checker`
+   - **포크 저장소 (우리 프로젝트)**: `https://github.com/yoonCY/overfit-checker`
+   - **유지 사유**: Vercel 서버리스 환경(`api/check.ts` Serverless Function)에 실시간 배포 및 웹 UI 서비스를 업로드하고 테스트하기 위함입니다.
+   - **기여 시 주의**: 원본 upstream 리포지토리의 최신 코드를 지속적으로 반영(싱크)하되, 우리 프로젝트 고유의 Vercel 배포 관련 커스텀 설정(예: JWT 서명 로직 `generateGatewayToken()`, `vercel.json` 설정, 배포 가이드 문서 등)이 손상되거나 삭제되지 않도록 유지해야 합니다.
 
 ---
 
@@ -165,14 +176,28 @@ vercel --prod
 
 `.env` 파일 기준 (`.env.example` 복사 후 편집):
 
-| 시나리오 | `LLM_BASE_URL` | `LLM_API_KEY` | `LLM_MODEL` |
-|---|---|---|---|
-| Govail 게이트웨이 | `http://localhost:14000/v1` | `govail-demo-admin` | `auto` 또는 `mock-model` |
-| OpenAI 직접 | `https://api.openai.com/v1` | `sk-...` | `gpt-4o-mini` |
-| 로컬 vLLM | `http://192.168.0.7:8000/v1` | `dummy` | 서버 모델명 |
-| 로컬 LM Studio | `http://localhost:1234/v1` | `lm-studio` | 모델명 |
+| 시나리오 | `LLM_BASE_URL` | `JWT_SECRET` | `LLM_MODEL` | 비고 |
+|---|---|---|---|---|
+| Govail 게이트웨이 (사설망) | `http://192.168.0.5:8080/v1` | `52f2bc1dff...` (등록된 Secret) | `auto` | macmini 게이트웨이 경유 (JWT 인증 강제) |
+| Govail 게이트웨이 (Vercel) | `https://<public-gateway-url>/v1` | `<shared-secret-key>` | `auto` | Vercel 배포 시 15분 단기 JWT 자동 서명 발행 |
+| OpenAI 직접 (비권장) | `https://api.openai.com/v1` | (JWT_SECRET 미설정 후 client.ts 별도 커스텀 필요) | `gpt-4o-mini` | 외부 클라우드 직접 연동 |
 
-**Vercel 배포 시**: Vercel 대시보드 → Project Settings → Environment Variables에서 `LLM_BASE_URL`, `LLM_API_KEY`, `LLM_MODEL` 설정.
+**Vercel 배포 시**: Vercel 대시보드 → Project Settings → Environment Variables에서 `LLM_BASE_URL`, `LLM_MODEL`, 및 `JWT_SECRET`을 필수로 설정합니다. (고정 API Key는 더 이상 지원되지 않습니다.)
+
+---
+
+## 배포 및 클라우드 호스팅 가이드
+
+애플리케이션은 서버리스(Vercel) 및 컨테이너(GCP Cloud Run) 환경으로 배포 가능하며, 상세 지침은 [docs/deployment.md](docs/deployment.md)에 통합 관리됩니다. AI 에이전트는 기여 시 다음 핵심 규칙을 인지하고 있어야 합니다.
+
+### Vercel 배포 핵심 규칙
+- **빌드 커맨드**: `pnpm --filter frontend build`
+- **출력 디렉토리**: `frontend/dist`
+- **서버리스 API**: `api/check.ts` (`express`를 타지 않고 직접 실행하므로 `api/check.ts` 코드 변경 시 주의)
+
+### GCP Cloud Run 배포 핵심 규칙
+- **포트 매핑**: GCP Cloud Run이 동적으로 주입하는 `PORT` 환경 변수를 기본값으로 감지하도록 구성되었습니다. CLI `ui` 서브커맨드는 기본적으로 `process.env.PORT || "3000"` 포트로 바인딩됩니다.
+- **보안 설정**: `JWT_SECRET`과 같은 자격 증명은 일반 환경 변수 대신 GCP Secret Manager에 등록 후 Cloud Run 서비스에 마운트하여 기동해야 합니다.
 
 ---
 

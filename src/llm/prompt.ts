@@ -43,6 +43,11 @@ export const SYSTEM_PROMPT = `당신은 경험 많은 시니어 소프트웨어 
 - 5~7: 주의 — 일부 과도한 요소 존재
 - 8~10: 과도 — 심각한 오버엔지니어링
 
+## 중요 제약 사항
+
+1. "overfit_items" 배열의 원소 개수는 최소 1개, 최대 5개 이하여야 합니다. 5개를 절대 초과하지 마세요.
+2. "next_tasks" 배열의 원소 개수는 정확히 3개여야 합니다. 3개보다 많거나 적으면 안 됩니다.
+
 ## 응답 형식
 
 반드시 다음 JSON 형식으로만 응답하세요. 다른 텍스트는 포함하지 마세요:
@@ -53,6 +58,7 @@ export const SYSTEM_PROMPT = `당신은 경험 많은 시니어 소프트웨어 
   "problem_size": "<Tiny|Small|Medium|Large|Enterprise>",
   "solution_size": "<Script|Library|Service|Platform|Ecosystem>",
   "overfit_items": [
+    // 중요: 최소 1개, 최대 5개 이하
     {
       "title": "<과도한 설계 요소 이름>",
       "reason": "<왜 과도한지 구체적 설명>",
@@ -64,6 +70,7 @@ export const SYSTEM_PROMPT = `당신은 경험 많은 시니어 소프트웨어 
     "savings": "<줄일 수 있는 복잡도/작업량>"
   },
   "next_tasks": [
+    // 중요: 반드시 정확히 3개
     { "order": 1, "task": "<최소 작업 1>" },
     { "order": 2, "task": "<최소 작업 2>" },
     { "order": 3, "task": "<최소 작업 3>" }

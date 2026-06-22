@@ -120,6 +120,13 @@ cp .env.example .env
 
 ---
 
+## 배포
+
+`overfit-checker`는 Vercel 또는 GCP Cloud Run 환경에 손쉽게 배포할 수 있습니다. 자세한 방법은 아래 문서를 참고하십시오.
+- [배포 가이드](docs/deployment.md): Vercel Serverless Function 배포 및 GCP Cloud Run 컨테이너 배포 상세 지침
+
+---
+
 ## 개발
 
 ```bash

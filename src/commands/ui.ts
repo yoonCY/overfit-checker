@@ -20,7 +20,7 @@ export function createUiCommand(): Command {
 
   cmd
     .description("로컬 웹 UI 서버를 실행하고 웹 브라우저를 자동 팝업합니다")
-    .option("-p, --port <port>", "서버가 리스닝할 포트 번호", "3000")
+    .option("-p, --port <port>", "서버가 리스닝할 포트 번호", process.env.PORT || "3000")
     .action((options: { port: string }) => {
       const port = Number.parseInt(options.port, 10);
       if (Number.isNaN(port)) {

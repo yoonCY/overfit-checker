@@ -6,16 +6,11 @@
   "functions": {
     "api/check.ts": {
       "memory": 256,
-      "maxDuration": 30
+      "maxDuration": 60
     }
   },
   "rewrites": [
     { "source": "/api/:path*", "destination": "/api/:path*" },
     { "source": "/(.*)", "destination": "/index.html" }
-  ],
-  "env": {
-    "LLM_BASE_URL": "@llm_base_url",
-    "LLM_API_KEY": "@llm_api_key",
-    "LLM_MODEL": "@llm_model"
-  }
+  ]
 }
