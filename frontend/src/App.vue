@@ -3,7 +3,13 @@
     <!-- 헤더 영역 -->
     <header>
       <div class="logo-section">
-        <h1><span>Overfit Checker</span> 🔍</h1>
+        <div class="logo-title-group">
+          <h1><span>Overfit Checker</span> 🔍</h1>
+          <div class="meta-badges">
+            <span class="version-badge">{{ appVersion }}</span>
+            <span class="label-badge">{{ appLabel }}</span>
+          </div>
+        </div>
         <p>설계 문서와 계획서의 오버엔지니어링 여부를 판독합니다.</p>
       </div>
       <button class="theme-toggle-btn" @click="toggleTheme">
@@ -207,6 +213,10 @@ const SOLUTION_RANK: Record<string, number> = {
   Script: 0, Library: 1, Service: 2, Platform: 3, Ecosystem: 4,
 };
 
+// @ts-ignore
+const appVersion = ref('v' + __APP_VERSION__);
+// @ts-ignore
+const appLabel = ref(__APP_LABEL__);
 const markdownText = ref('');
 const isLoading = ref(false);
 const result = ref<OverfitResult | null>(null);
