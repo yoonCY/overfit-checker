@@ -31,4 +31,10 @@ Thumbs.db
 coverage/
 .nyc_output/
 .vercel
+
+# AI Agents
+agents/
+.agents/
+.cursor/rules
+
 .env*
