@@ -24,6 +24,8 @@ describe("OverfitResultSchema", () => {
       { order: 3, task: "JSON 출력" },
     ],
     summary: "1명 팀에 컴파일러와 Actor 시스템은 과도함",
+    reasoning:
+      "이 프로젝트는 1명 팀을 위한 단순한 도구입니다. 하지만 Actor 시스템과 독자적인 DSL 컴파일러를 추가하여 유지보수 비용을 크게 늘렸습니다. 이는 명백한 과적합(Overfit) 설계입니다.",
   };
 
   it("유효한 결과를 파싱한다", () => {

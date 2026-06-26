@@ -8,14 +8,15 @@
 
 ## DONE IF
 
-* Vercel Production 환경 변수 `LLM_BASE_URL`이 `https://local-llm-gateway-d8ikelzd.an.gateway.dev/v1` 로 정상 변경됨.
-* Vercel 재배포가 완료되고, 배포된 웹 UI에서 설계 분석 요청이 정상적으로 동작하여 결과가 반환됨.
+* Vercel Production 환경 변수 `LLM_BASE_URL`이 GCP Gateway 주소로 변경됨.
+* GCP API Gateway 설정에 `disable_auth: true`가 적용되어 Bearer Authorization 토큰이 로컬 백엔드(`ycy0922.iptime.org:8080`)로 정상적으로 흘러감.
+* Vercel 배포 본의 웹 UI 및 API 통신이 GCP Gateway를 성공적으로 관통하여 분석 결과 JSON을 정상 수신함.
 
 ---
 
 ## MUST NOT 🚫
 
-* 로컬 코드 변경을 수행하지 않는다. (오직 환경 변수 변경 및 Vercel 재배포만 진행)
+* 로컬 어플리케이션 소스 코드(src/, frontend/)를 수정하지 않는다. (오직 openapi-seoul.yaml 및 인프라 설정만 변경)
 * `JWT_SECRET` 이나 `LLM_MODEL` 등 다른 무관한 환경 변수의 설정값을 변경하거나 유출하지 않는다.
 
 ---
@@ -24,12 +25,12 @@
 
 IN:
 * Vercel Production 환경 변수 `LLM_BASE_URL` 업데이트
-* Vercel Production 재배포 (`vercel --prod`)
+* `openapi-seoul.yaml` 내 `disable_auth: true` 주입 및 GCP API Gateway Config 갱신
 * 웹 UI E2E 분석 검증
 
 OUT:
-* 로컬 코드 및 설정 파일(예: `vercel.json`) 수정
-* GCP API Gateway 설정 변경
+* 로컬 어플리케이션 기능 코드 수정
+* GCP API Gateway 자체 라우팅 주소 변경
 
 ---
 

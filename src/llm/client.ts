@@ -188,6 +188,7 @@ export async function analyzeDocument(
           { order: 3, task: "코드 복잡도 낮추기 및 설계 경량화 수행" },
         ],
         summary: `GoVail Router가 ${finalDecision.target ?? "N/A"} 타겟으로 작업 위임을 마쳤습니다.`,
+        reasoning: `GoVail Router가 ${finalDecision.target ?? "N/A"} 타겟을 위해 수립한 ${stepsCount}개의 실행 스텝을 분석했습니다. 문제 규모에 비해 불필요하게 복잡한 다단계 프로세스 위임 또는 런타임이 식별되었습니다.`,
       };
     }
 

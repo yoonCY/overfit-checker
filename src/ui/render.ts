@@ -69,6 +69,19 @@ export function renderResult(result: OverfitResult, label: string): void {
   console.log();
   console.log(bar);
 
+  // AI 추론 분석 (Reasoning)
+  if (result.reasoning) {
+    console.log();
+    console.log(chalk.bold("🧠  AI 추론 분석 (Reasoning)"));
+    console.log();
+    const lines = result.reasoning.split("\n");
+    for (const line of lines) {
+      console.log(`  ${chalk.italic.dim(line)}`);
+    }
+    console.log();
+    console.log(bar);
+  }
+
   // 과도한 설계 요소
   if (result.overfit_items.length === 0) {
     console.log();
@@ -123,6 +136,11 @@ export function renderMarkdown(result: OverfitResult, label: string): void {
   md += `## 복잡도 점수: ${result.complexity_score} / 10 (${result.verdict})\n\n`;
   md += `| 문제 규모 | 해결책 규모 |\n|---|---|\n| ${result.problem_size} | ${result.solution_size} |\n\n`;
   md += `> ${result.summary}\n\n`;
+
+  if (result.reasoning) {
+    md += "## AI 추론 분석 (Reasoning)\n\n";
+    md += `${result.reasoning}\n\n`;
+  }
 
   md += `## 과도한 설계 요소 (${result.overfit_items.length}개)\n\n`;
   if (result.overfit_items.length === 0) {

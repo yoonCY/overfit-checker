@@ -6,7 +6,7 @@
 
 > [!IMPORTANT]
 > - `README.md` 및 `AGENTS.md`에 LiteLLM의 메인/서브 업스트림 폴백 메커니즘에 대한 가이드 문구를 추가합니다.
-> - `.ai/rules/` 디렉토리 내의 지침 파일들(`rules.md`, `00-L3-m1max-workspace.md`, `10-L3-govail-gateway.md`, `11-L3-govail-analyzer.md`)에 남아있는 사설 IP(`192.168.0.x`) 및 온프레미스 호스트명(`macmini`, `dgx-spark` 등)을 일반화된 도메인(`gpu-node.local`, `app-host.local`, `local-workstation` 등)으로 리팩토링합니다.
+> - `agents/rules/` 디렉토리 내의 지침 파일들(`rules.md`, `00-L3-m1max-workspace.md`, `10-L3-govail-gateway.md`, `11-L3-govail-analyzer.md`)에 남아있는 사설 IP(`192.168.0.x`) 및 온프레미스 호스트명(`macmini`, `dgx-spark` 등)을 일반화된 도메인(`gpu-node.local`, `app-host.local`, `local-workstation` 등)으로 리팩토링합니다.
 > - 최종 변경사항을 반영하여 `git commit` 후 Pull Request를 제안할 수 있도록 브랜치를 설정하고 준비합니다.
 
 ## Proposed Changes
@@ -23,16 +23,16 @@
 
 ### AI Rules & Skills (VCS Ignored, Local Core)
 
-#### [MODIFY] [.ai/rules.md](file:///Users/studio-server/srv/govail/.ai/rules.md)
+#### [MODIFY] [agents/rules.md](file:///Users/studio-server/srv/govail/agents/rules.md)
 - `M1 Max(192.168.0.8)` 명칭을 일반화된 워크스테이션 명칭으로 수정합니다.
 
-#### [MODIFY] [00-L3-m1max-workspace.md](file:///Users/studio-server/srv/govail/.ai/rules/00-L3-m1max-workspace.md)
+#### [MODIFY] [00-L3-m1max-workspace.md](file:///Users/studio-server/srv/govail/agents/rules/00-L3-m1max-workspace.md)
 - 사설 IP 주소 및 호스트명을 `local-workstation`, `app-host.local`, `gpu-node.local`로 리팩토링합니다.
 
-#### [MODIFY] [10-L3-govail-gateway.md](file:///Users/studio-server/srv/govail/.ai/rules/10-L3-govail-gateway.md)
+#### [MODIFY] [10-L3-govail-gateway.md](file:///Users/studio-server/srv/govail/agents/rules/10-L3-govail-gateway.md)
 - `dgx-spark(192.168.0.7:8080)` 지침을 `gpu-node.local:8080`으로 일반화합니다.
 
-#### [MODIFY] [11-L3-govail-analyzer.md](file:///Users/studio-server/srv/govail/.ai/rules/11-L3-govail-analyzer.md)
+#### [MODIFY] [11-L3-govail-analyzer.md](file:///Users/studio-server/srv/govail/agents/rules/11-L3-govail-analyzer.md)
 - `SurrealDB(macmini:8800)`, `govail-gateway(192.168.0.7:8080)`, `macmini(192.168.0.5)` 명칭을 각각 `app-host.local` 및 일반화된 구성으로 업데이트합니다.
 
 ## Verification Plan

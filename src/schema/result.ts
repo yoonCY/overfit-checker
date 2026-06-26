@@ -48,6 +48,9 @@ export const OverfitResultSchema = z.object({
   alternative: AlternativeSchema.describe("더 작은 대안"),
   next_tasks: z.array(NextTaskSchema).length(3).describe("다음 최소 작업 3개"),
   summary: z.string().describe("한 줄 요약"),
+  reasoning: z
+    .string()
+    .describe("과적합 여부를 판단하기까지의 핵심 추론 및 고민 과정 (500자 이내)"),
 });
 
 export type OverfitItem = z.infer<typeof OverfitItemSchema>;
