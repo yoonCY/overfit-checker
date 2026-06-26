@@ -92,12 +92,14 @@ export async function analyzeDocument(
       }),
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`GoVail Router 호출 실패 (HTTP ${response.status}): ${errorText}`);
+    const res = response as any;
+
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(`GoVail Router 호출 실패 (HTTP ${res.status}): ${errorText}`);
     }
 
-    const reader = response.body?.getReader();
+    const reader = res.body?.getReader();
     if (!reader) {
       throw new Error("GoVail Router 응답 스트림 바디 리더를 획득할 수 없습니다.");
     }
