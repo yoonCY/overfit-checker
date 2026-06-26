@@ -1,6 +1,6 @@
 {
   "name": "overfit-checker",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "설계 문서/PR 계획이 과도한지 판독하고 더 작은 대안을 제시하는 CLI 도구",
   "type": "module",
   "bin": {
