@@ -5,6 +5,23 @@ import { parseFile, parseStdin } from "../parser/markdown.js";
 import type { OverfitResult } from "../schema/result.js";
 import { renderJson, renderMarkdown, renderResult } from "../ui/render.js";
 
+function getStageLabel(stage: string): string {
+  switch (stage) {
+    case "context_check":
+      return "문맥 점검";
+    case "planning":
+      return "계획 수립";
+    case "delegation":
+      return "실행 위임";
+    case "completed":
+      return "전체 완료";
+    case "error":
+      return "오류 발생";
+    default:
+      return stage;
+  }
+}
+
 export function createCheckCommand(): Command {
   const cmd = new Command("check");
 
@@ -48,23 +65,67 @@ export function createCheckCommand(): Command {
           process.exit(1);
         }
 
-        // LLM 분석
+        // 실시간 스트리밍 과정 렌더링
+        console.log(
+          `\n🔍 GoVail Router 오케스트레이션 기동 (추정 토큰: ${doc.estimatedTokens.toLocaleString()})\n`,
+        );
         const spinner = ora({
-          text: `분석 중... (약 ${doc.estimatedTokens.toLocaleString()} 토큰)`,
+          text: "오케스트레이터 시작 대기 중...",
           color: "cyan",
         }).start();
 
+        let currentStage = "";
         let result: OverfitResult;
+
         try {
-          result = await analyzeDocument(doc.content);
-          spinner.succeed("분석 완료");
+          result = await analyzeDocument(doc.content, (payload) => {
+            const { stage, status, message, data } = payload;
+
+            if (stage !== currentStage) {
+              if (currentStage && currentStage !== "completed") {
+                spinner.succeed(`[${getStageLabel(currentStage)}] 처리 완료.`);
+              }
+              currentStage = stage;
+              spinner.start(`[${getStageLabel(stage)}] ${message}`);
+            } else {
+              spinner.text = `[${getStageLabel(stage)}] ${message}`;
+            }
+
+            // 세부 단계 완료 시 추가 출력
+            if (status === "success" && data) {
+              const details = data as {
+                steps?: Array<{
+                  step_id: number;
+                  action: string;
+                  target: string;
+                  description: string;
+                }>;
+                runtime_task_id?: string;
+              };
+
+              if (stage === "planning" && details.steps) {
+                spinner.info(`[${getStageLabel(stage)}] 생성된 계획 스텝:`);
+                for (const s of details.steps) {
+                  console.log(
+                    `    - 스텝 ${s.step_id}: [${s.action}] ${s.target} (${s.description})`,
+                  );
+                }
+              } else if (stage === "delegation" && details.runtime_task_id) {
+                spinner.info(
+                  `[${getStageLabel(stage)}] 외부 런타임 위임 태스크 ID: ${details.runtime_task_id}`,
+                );
+              }
+            }
+          });
+          spinner.succeed("오케스트레이션 분석 전 처리 완료.");
         } catch (err) {
-          spinner.fail("분석 실패");
+          spinner.fail("오케스트레이터 처리 실패");
           console.error(err instanceof Error ? err.message : String(err));
           process.exit(1);
         }
 
-        // 출력
+        // 최종 분석 결과 출력
+        console.log(`\n📊 최종 설계 검증 보고서 (${doc.label})\n`);
         if (options.format === "json") {
           renderJson(result);
         } else if (options.format === "markdown") {
