@@ -92,6 +92,7 @@ export async function analyzeDocument(
       }),
     });
 
+    // biome-ignore lint/suspicious/noExplicitAny: cast to any for ts compilation in node fetch response
     const res = response as any;
 
     if (!res.ok) {
